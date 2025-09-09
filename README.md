@@ -48,7 +48,7 @@ The system integrates seamlessly with existing CCTV and IoT infrastructure while
 |----------------------|------------|
 | **Backend**          | FastAPI (Python) |
 | **Database**         | MongoDB |
-| **Computer Vision**  | YOLOv5, OpenCV, DeepSORT |
+| **Computer Vision**  | YOLOv8, OpenCV, DeepSORT |
 | **Reinforcement Learning** | Stable-Baselines3 (PPO), SUMO |
 | **Frontend**         | React.js + TailwindCSS |
 | **API**              | REST (JSON) |
