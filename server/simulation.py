@@ -9,8 +9,12 @@ import random
 import time
 import threading
 import pygame
-import sys
 import os
+import queue
+
+FRAME_QUEUE = queue.Queue(maxsize=1)  # Only keep the latest frame
+
+
 
 # --------------------------
 # === Configuration ===
@@ -18,7 +22,9 @@ import os
 # Default times (seconds)
 DEFAULT_GREEN = {0: 10, 1: 10, 2: 10, 3: 10}  # green durations for each signal index
 DEFAULT_RED = 60
-DEFAULT_YELLOW = 1
+DEFAULT_YELLOW = 2
+
+SHARED_SCREEN = None
 
 # Enable randomized green durations between this range (inclusive)
 RANDOM_GREEN = True
@@ -288,7 +294,7 @@ class Vehicle(pygame.sprite.Sprite):
         elif dir == 'up':
             self._handle_crossing(condition=(self.y < STOP_LINES[dir]))
             self._move_up()
-
+    
     def _handle_crossing(self, condition: bool):
         """When the front passes the stop-line condition, mark crossed and append to non-turned list if needed."""
         if self.crossed == 0 and condition:
@@ -308,7 +314,7 @@ class Vehicle(pygame.sprite.Sprite):
                 # close to stop line and not rotated yet -> either move straight or begin turn
                 if self.crossed == 0 or (self.x + self.image.get_rect().width < STOP_LINES[self.direction] + 40):
                     # allowed to move forward if before stop or green or already crossed, and gap maintained
-                    if ((self.x + self.image.get_rect().width <= self.stop or is_green_for(0) or self.crossed == 1)
+                    if ((self.x + self.image.get_rect().width <= self.stop or is_green_for(0, self.lane, self.will_turn) or self.crossed == 1)
                             and (self.index == 0 or (self.x + self.image.get_rect().width < (vehicles[self.direction][self.lane][self.index - 1].x - MOVING_GAP))
                                  or vehicles[self.direction][self.lane][self.index - 1].turned == 1)):
                         self.x += self.speed
@@ -354,7 +360,7 @@ class Vehicle(pygame.sprite.Sprite):
         else:
             # Straight-driving (not turning)
             if self.crossed == 0:
-                if ((self.x + self.image.get_rect().width <= self.stop or is_green_for(0))
+                if ((self.x + self.image.get_rect().width <= self.stop or  is_green_for(0, self.lane, self.will_turn))
                         and (self.index == 0 or (self.x + self.image.get_rect().width <
                                                 (vehicles[self.direction][self.lane][self.index - 1].x - MOVING_GAP)))):
                     self.x += self.speed
@@ -607,6 +613,7 @@ def vehicle_generator_loop():
 
     while True:
         # ✅ Handle startup safely (no KeyError when current_green is None)
+        will_turn = 0
         green_dir = DIRECTION_MAP[current_green] if current_green is not None else None
 
         # pick from directions except the active green
@@ -621,9 +628,11 @@ def vehicle_generator_loop():
 
         # random lane (1 or 2)
         lane_number = 1 if random.randint(0, 99) < 60 else 2
-
-        # 80% chance to turn
-        will_turn = 1 if random.randint(0, 99) < 70 else 0
+        
+        if lane_number == 1:
+            will_turn = 1
+        elif lane_number == 2:
+            will_turn = 1 if random.randint(0, 99) < 40 else 0
 
         # random vehicle type
         vehicle_idx = random.choice(allowed_vehicle_type_indices)
@@ -716,12 +725,16 @@ def dynamic_signal_controller():
                 signals[current_green].yellow -= 1
                 signals[simultaneous_green].yellow -= 1
                 current_yellow = 1
+                for lane in range(0, 3):
+                    for vehicle in vehicles[DIRECTION_MAP[current_green]][lane]:
+                        vehicle.stop = DEFAULT_STOP[DIRECTION_MAP[current_green]]
+                    for vehicle in vehicles[DIRECTION_MAP[simultaneous_green]][lane]:
+                        vehicle.stop = DEFAULT_STOP[DIRECTION_MAP[simultaneous_green]]
 
             # Update red timers for other signals
             for i in range(no_of_signals):
                 if i not in [current_green, simultaneous_green]:
                     signals[i].red = signals[current_green].green + signals[current_green].yellow
-
             time.sleep(1)
 
 def draw_lane_state_table(screen, font, lane_state, x=850, y=100, row_height=30):
@@ -846,18 +859,21 @@ def draw_summary_table(screen, font, lane_state, time_elapsed, x=850, y=300, row
 
 # ---------------- MAIN LOOP ---------------- #
 def main():
-    global allowed_vehicle_type_indices, startup_mode, SPAWN_COUNTS
+    global allowed_vehicle_type_indices, startup_mode, SPAWN_COUNTS, LANE_STATE, time_elapsed, current_green, current_yellow, simultaneous_green, LATEST_FRAME
+    global signals, no_of_signals, startup_time, SHARED_SCREEN
 
     allowed_vehicle_type_indices = [i for i, name in VEHICLE_TYPES.items() if ALLOWED_VEHICLE_TYPES.get(name, False)]
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("TRAFFIC SIMULATION")
+    SHARED_SCREEN = screen
 
     background = pygame.image.load(BACKGROUND_PATH)
     red_img = pygame.image.load('images/signals/red.png')
     yellow_img = pygame.image.load('images/signals/yellow.png')
     green_img = pygame.image.load('images/signals/green.png')
-    font = pygame.font.Font(None, 30)
+    font = pygame.font.SysFont("Arial", 15)
+
 
     initialize_signals()
 
@@ -896,35 +912,14 @@ def main():
                     ts.signal_text = ts.red if ts.red <= 10 else "---"
                     screen.blit(red_img, SIGNAL_COORDS[i])
 
-        # Draw signal timers
-        # for i in range(no_of_signals):
-        #     text_surf = font.render(str(signals[i].signal_text), True, (255, 255, 255), (0, 0, 0))
-        #     screen.blit(text_surf, SIGNAL_TIMER_COORDS[i])
-
-        # Draw vehicle counts
-        # for i in range(no_of_signals):
-        #     count = vehicles[DIRECTION_MAP[i]]['crossed']
-        #     text_surf = font.render(str(count), True, (0, 0, 0), (255, 255, 255))
-        #     screen.blit(text_surf, VEHICLE_COUNT_COORDS[i])
-
-        # Draw elapsed time
-        # te_surf = font.render(f"Time Elapsed: {time_elapsed}", True, (0, 0, 0), (255, 255, 255))
-        # screen.blit(te_surf, TIME_ELAPSED_COORDS)
-        font = pygame.font.SysFont("Arial", 15)
         # Update LANE_STATE for remaining vehicles (dummy placeholder)
         for direction in SPAWN_COUNTS:
-            label = DIRECTION_LABELS[direction]
             spawned_total = SPAWN_COUNTS[direction][1] + SPAWN_COUNTS[direction][2]
             crossed_total = vehicles[direction]['crossed']
             LANE_STATE[direction]['spawned'] = spawned_total
             LANE_STATE[direction]['crossed'] = crossed_total
             LANE_STATE[direction]['remaining'] = spawned_total - crossed_total
             draw_lane_state_table(screen, font, LANE_STATE, x=900, y=100)
-
-            # text = f"{label}: Spawned={spawned_total} | Crossed={crossed_total} | Remaining={spawned_total - crossed_total}"
-            # surf = font.render(text, True, (0,0,0), (255,255,255))
-            # screen.blit(surf, (850, y_offset))
-            # y_offset += 30
             
         # After drawing signals & vehicle table, add:
         draw_signals_table(screen, font, signals, current_green, current_yellow, sim_green=simultaneous_green, x=75, y=100)
@@ -933,12 +928,24 @@ def main():
         # draw_signals_table(screen, font)
 
         # Draw and move vehicles
-        for vehicle in list(simulation):
-            vehicle.render(screen)
-            vehicle.move()
+        for _ in range(1):
+            for vehicle in list(simulation):
+                vehicle.render(screen)
+                vehicle.move()
+            
+        # for vehicle in list(simulation):
+        #     vehicle.render(screen)
+        #     vehicle.move()
 
         pygame.display.update()
-        clock.tick(60)
-
+        clock.tick(120)
+        
+        # Copy the screen for streaming (non-blocking)
+        frame_copy = screen.copy()
+        if FRAME_QUEUE.empty():
+            FRAME_QUEUE.put(frame_copy)
+    
+    
 if __name__ == "__main__":
+    # Start Pygame simulation
     main()
