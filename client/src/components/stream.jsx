@@ -27,5 +27,5 @@ export default function Stream() {
     start();
   }, []);
 
-  return <video id="remoteVideo" autoPlay playsInline muted style={{ width: "100%" }}></video>;
+  return <video id="remoteVideo" autoPlay playsInline muted style={{ width: "50%" }}></video>;
 }

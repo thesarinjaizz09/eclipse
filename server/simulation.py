@@ -13,8 +13,9 @@ import os
 import queue
 
 FRAME_QUEUE = queue.Queue(maxsize=1)  # Only keep the latest frame
+DEBUG_MODE = False
 
-
+pygame.init()
 
 # --------------------------
 # === Configuration ===
@@ -36,17 +37,18 @@ TIME_ELAPSED_COORDS = (1100, 50)
 
 # Visual layout coords (must match your images/intersection)
 
-SCREEN_WIDTH, SCREEN_HEIGHT = 1400, 800
-BACKGROUND_PATH = "images/intersection.png"
+info = pygame.display.Info()
+BACKGROUND_PATH = "images/33191.jpg"
+SCREEN_WIDTH, SCREEN_HEIGHT = info.current_w, info.current_h
 
 # Signal icon positions (for blitting red/yellow/green images)
-SIGNAL_COORDS = [(530, 230), (810, 230), (810, 570), (530, 570)]
+SIGNAL_COORDS = [(445, 290), (810, 290), (810, 644), (445, 644)]
 SIGNAL_TIMER_COORDS = [(530, 210), (810, 210), (810, 550), (530, 550)]
 VEHICLE_COUNT_COORDS = [(480, 210), (880, 210), (880, 550), (480, 550)]
 
 # Stop-lines and default stops (where vehicles should stop when light is red)
-STOP_LINES = {'right': 590, 'down': 330, 'left': 800, 'up': 535}
-DEFAULT_STOP = {'right': 580, 'down': 320, 'left': 810, 'up': 545}
+STOP_LINES = {'right': 508, 'down': 408, 'left': 776, 'up': 612}
+DEFAULT_STOP = {'right': 498, 'down': 398, 'left': 786, 'up': 622}
 
 # Movement gaps
 STOPPING_GAP = 25    # px gap when stopped
@@ -56,8 +58,8 @@ MOVING_GAP = 25      # px gap when moving
 SPEEDS = {'car': 2.5, 'bus': 2, 'truck': 2, 'bike': 2.75}
 
 # Starting coordinates per direction (x and y lists for lane offsets)
-START_X = {'right': [0, 0, 0], 'down': [755, 727, 697], 'left': [1400, 1400, 1400], 'up': [602, 627, 657]}
-START_Y = {'right': [348, 370, 398], 'down': [0, 0, 0], 'left': [498, 466, 436], 'up': [800, 800, 800]}
+START_X = {'right': [0, 0, 0], 'down': [755, 727, 677], 'left': [1400, 1400, 1400], 'up': [515, 540, 588]}
+START_Y = {'right': [410, 428, 465], 'down': [0, 0, 0], 'left': [498, 575, 530], 'up': [1023, 1023, 1203]}
 
 SPAWN_COUNTS = {
     'up':    {1: 0, 2: 0},
@@ -68,10 +70,10 @@ SPAWN_COUNTS = {
 simulation = pygame.sprite.Group()
 # Mid points used in turning logic (approximate pivot coords)
 MID = {
-    'right': {'x': 705, 'y': 445},
-    'down':  {'x': 695, 'y': 450},
-    'left':  {'x': 695, 'y': 425},
-    'up':    {'x': 695, 'y': 400},
+    'right': {'x': 670, 'y': 445},
+    'down':  {'x': 695, 'y': 530},
+    'left':  {'x': 640, 'y': 405},
+    'up':    {'x': 685, 'y': 500},
 }
 
 # Which vehicle types are enabled
@@ -312,7 +314,7 @@ class Vehicle(pygame.sprite.Sprite):
             # Lane 1: turn up-left (rotate +)
             if self.lane == 1:
                 # close to stop line and not rotated yet -> either move straight or begin turn
-                if self.crossed == 0 or (self.x + self.image.get_rect().width < STOP_LINES[self.direction] + 40):
+                if self.crossed == 0 or (self.x + self.image.get_rect().width < STOP_LINES[self.direction] + 10):
                     # allowed to move forward if before stop or green or already crossed, and gap maintained
                     if ((self.x + self.image.get_rect().width <= self.stop or is_green_for(0, self.lane, self.will_turn) or self.crossed == 1)
                             and (self.index == 0 or (self.x + self.image.get_rect().width < (vehicles[self.direction][self.lane][self.index - 1].x - MOVING_GAP))
@@ -375,7 +377,7 @@ class Vehicle(pygame.sprite.Sprite):
         if self.will_turn == 1:
             # Lane 1: turn right (rotate +)
             if self.lane == 1:
-                if self.crossed == 0 or (self.y + self.image.get_rect().height < STOP_LINES[self.direction] + 50):
+                if self.crossed == 0 or (self.y + self.image.get_rect().height < STOP_LINES[self.direction] + 25):
                     if ((self.y + self.image.get_rect().height <= self.stop or is_green_for(1, self.lane, self.will_turn) or self.crossed == 1)
                             and (self.index == 0 or (self.y + self.image.get_rect().height <
                                                      (vehicles[self.direction][self.lane][self.index - 1].y - MOVING_GAP))
@@ -435,7 +437,7 @@ class Vehicle(pygame.sprite.Sprite):
         """Movement rules for 'left' direction (decreasing x)."""
         if self.will_turn == 1:
             if self.lane == 1:
-                if self.crossed == 0 or (self.x > STOP_LINES[self.direction] - 70):
+                if self.crossed == 0 or (self.x > STOP_LINES[self.direction]):
                     if ((self.x >= self.stop or is_green_for(2, self.lane, self.will_turn) or self.crossed == 1)
                             and (self.index == 0 or (self.x > (vehicles[self.direction][self.lane][self.index - 1].x + vehicles[self.direction][self.lane][self.index - 1].image.get_rect().width + MOVING_GAP))
                                  or vehicles[self.direction][self.lane][self.index - 1].turned == 1)):
@@ -491,7 +493,7 @@ class Vehicle(pygame.sprite.Sprite):
         
         if self.will_turn == 1:
             if self.lane == 1:
-                if self.crossed == 0 or (self.y > STOP_LINES[self.direction] - 60):
+                if self.crossed == 0 or (self.y > STOP_LINES[self.direction]):
                     if ((self.y >= self.stop or is_green_for(3, self.lane, self.will_turn) or self.crossed == 1)
                             and (self.index == 0 or (self.y > (vehicles[self.direction][self.lane][self.index - 1].y + vehicles[self.direction][self.lane][self.index - 1].image.get_rect().height + MOVING_GAP))
                                  or vehicles[self.direction][self.lane][self.index - 1].turned == 1)):
@@ -858,92 +860,144 @@ def draw_summary_table(screen, font, lane_state, time_elapsed, x=850, y=300, row
 
 
 # ---------------- MAIN LOOP ---------------- #
-def main():
-    global allowed_vehicle_type_indices, startup_mode, SPAWN_COUNTS, LANE_STATE, time_elapsed, current_green, current_yellow, simultaneous_green, LATEST_FRAME
-    global signals, no_of_signals, startup_time, SHARED_SCREEN
+def main(start_pygame=True):
+    if start_pygame:
+        global allowed_vehicle_type_indices, startup_mode, SPAWN_COUNTS, LANE_STATE, time_elapsed, current_green, current_yellow, simultaneous_green, LATEST_FRAME
+        global signals, no_of_signals, startup_time, SHARED_SCREEN
 
-    allowed_vehicle_type_indices = [i for i, name in VEHICLE_TYPES.items() if ALLOWED_VEHICLE_TYPES.get(name, False)]
-    pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("TRAFFIC SIMULATION")
-    SHARED_SCREEN = screen
+        allowed_vehicle_type_indices = [i for i, name in VEHICLE_TYPES.items() if ALLOWED_VEHICLE_TYPES.get(name, False)]
+        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("TRAFFIC SIMULATION")
+        SHARED_SCREEN = screen
+        background = pygame.image.load(BACKGROUND_PATH)
+        background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        red_img = pygame.image.load('images/signals/red.png')
+        yellow_img = pygame.image.load('images/signals/yellow.png')
+        green_img = pygame.image.load('images/signals/green.png')
+        font = pygame.font.SysFont("Arial", 15)
 
-    background = pygame.image.load(BACKGROUND_PATH)
-    red_img = pygame.image.load('images/signals/red.png')
-    yellow_img = pygame.image.load('images/signals/yellow.png')
-    green_img = pygame.image.load('images/signals/green.png')
-    font = pygame.font.SysFont("Arial", 15)
 
+        initialize_signals()
 
-    initialize_signals()
+        threading.Thread(target=vehicle_generator_loop, daemon=True).start()
+        threading.Thread(target=simulation_timer_loop, daemon=True).start()
 
-    threading.Thread(target=vehicle_generator_loop, daemon=True).start()
-    threading.Thread(target=simulation_timer_loop, daemon=True).start()
+        clock = pygame.time.Clock()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    show_stats_and_exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    print("Mouse clicked at:", event.pos)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_d:
+                        global DEBUG_MODE
+                        DEBUG_MODE = not DEBUG_MODE
+                        print("DEBUG MODE:", DEBUG_MODE)
 
-    clock = pygame.time.Clock()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                show_stats_and_exit()
+            # Start dynamic signals after startup delay
+            if time.time() - startup_time >= STARTUP_DELAY and not hasattr(initialize_signals, "done"):
+                initialize_signals.done = True
+                threading.Thread(target=dynamic_signal_controller, daemon=True).start()
+                startup_mode = False
 
-        # Start dynamic signals after startup delay
-        if time.time() - startup_time >= STARTUP_DELAY and not hasattr(initialize_signals, "done"):
-            initialize_signals.done = True
-            threading.Thread(target=dynamic_signal_controller, daemon=True).start()
-            startup_mode = False
+            screen.blit(background, (0, 0))
 
-        screen.blit(background, (0, 0))
-
-        # Draw signals
-        for i in range(no_of_signals):
-            ts = signals[i]
-            if startup_mode:
-                ts.signal_text = ts.red if ts.red <= 10 else "---"
-                screen.blit(red_img, SIGNAL_COORDS[i])
-            else:
-                if i == current_green or i == simultaneous_green:
-                    if current_yellow:
-                        ts.signal_text = ts.yellow
-                        screen.blit(yellow_img, SIGNAL_COORDS[i])
-                    else:
-                        ts.signal_text = ts.green
-                        screen.blit(green_img, SIGNAL_COORDS[i])
-                else:
+            # Draw signals
+            for i in range(no_of_signals):
+                ts = signals[i]
+                if startup_mode:
                     ts.signal_text = ts.red if ts.red <= 10 else "---"
                     screen.blit(red_img, SIGNAL_COORDS[i])
+                else:
+                    if i == current_green or i == simultaneous_green:
+                        if current_yellow:
+                            ts.signal_text = ts.yellow
+                            screen.blit(yellow_img, SIGNAL_COORDS[i])
+                        else:
+                            ts.signal_text = ts.green
+                            screen.blit(green_img, SIGNAL_COORDS[i])
+                    else:
+                        ts.signal_text = ts.red if ts.red <= 10 else "---"
+                        screen.blit(red_img, SIGNAL_COORDS[i])
 
-        # Update LANE_STATE for remaining vehicles (dummy placeholder)
-        for direction in SPAWN_COUNTS:
-            spawned_total = SPAWN_COUNTS[direction][1] + SPAWN_COUNTS[direction][2]
-            crossed_total = vehicles[direction]['crossed']
-            LANE_STATE[direction]['spawned'] = spawned_total
-            LANE_STATE[direction]['crossed'] = crossed_total
-            LANE_STATE[direction]['remaining'] = spawned_total - crossed_total
-            draw_lane_state_table(screen, font, LANE_STATE, x=900, y=100)
+            # Update LANE_STATE for remaining vehicles (dummy placeholder)
+            for direction in SPAWN_COUNTS:
+                spawned_total = SPAWN_COUNTS[direction][1] + SPAWN_COUNTS[direction][2]
+                crossed_total = vehicles[direction]['crossed']
+                LANE_STATE[direction]['spawned'] = spawned_total
+                LANE_STATE[direction]['crossed'] = crossed_total
+                LANE_STATE[direction]['remaining'] = spawned_total - crossed_total
+                # draw_lane_state_table(screen, font, LANE_STATE, x=900, y=100)
+                
+            # After drawing signals & vehicle table, add:
+            # draw_signals_table(screen, font, signals, current_green, current_yellow, sim_green=simultaneous_green, x=75, y=100)
+            # draw_summary_table(screen, font, LANE_STATE, time_elapsed, x=900, y=600)
+
+            # draw_signals_table(screen, font)
+
+            # Draw and move vehicles
+            for _ in range(2):
+                for vehicle in list(simulation):
+                    vehicle.render(screen)
+                    vehicle.move()
+                
+            # for vehicle in list(simulation):
+            #     vehicle.render(screen)
+            #     vehicle.move()
             
-        # After drawing signals & vehicle table, add:
-        draw_signals_table(screen, font, signals, current_green, current_yellow, sim_green=simultaneous_green, x=75, y=100)
-        draw_summary_table(screen, font, LANE_STATE, time_elapsed, x=900, y=600)
+            # Draw stop lines for debugging
+            # for d, coord in STOP_LINES.items():
+            #     if d in ['right', 'left']:
+            #         pygame.draw.line(screen, (255, 0, 0), (coord, 0), (coord, SCREEN_HEIGHT), 2)
+            #     else:
+            #         pygame.draw.line(screen, (0, 255, 0), (0, coord), (SCREEN_WIDTH, coord), 2)
+                    
+            # if DEBUG_MODE:
+            #     # # --- Stop lines (red) ---
+            #     # for d, coord in STOP_LINES.items():
+            #     #     if d in ['right', 'left']:  # vertical
+            #     #         pygame.draw.line(screen, (255, 0, 0), (coord, 0), (coord, SCREEN_HEIGHT), 2)
+            #     #     else:  # horizontal
+            #     #         pygame.draw.line(screen, (255, 0, 0), (0, coord), (SCREEN_WIDTH, coord), 2)
 
-        # draw_signals_table(screen, font)
+            #     # # --- Default stop positions (blue dots) ---
+            #     # for d, coord in DEFAULT_STOP.items():
+            #     #     if d in ['right', 'left']:
+            #     #         pygame.draw.circle(screen, (0, 0, 255), (coord, SCREEN_HEIGHT//2), 5)
+            #     #     else:
+            #     #         pygame.draw.circle(screen, (0, 0, 255), (SCREEN_WIDTH//2, coord), 5)
 
-        # Draw and move vehicles
-        for _ in range(1):
-            for vehicle in list(simulation):
-                vehicle.render(screen)
-                vehicle.move()
+            #     # --- Spawn points (cyan dots) ---
+            #     # for direction in START_X:
+            #     #     for i in range(3):
+            #     #         pygame.draw.circle(screen, (0, 255, 255), (START_X[direction][i], START_Y[direction][i]), 6)
+
+            #     # # --- Lane center lines (magenta) ---
+            #     # for direction in START_X:
+            #     #     for i in range(3):
+            #     #         if direction in ['right', 'left']:  # horizontal roads
+            #     #             y = START_Y[direction][i]
+            #     #             pygame.draw.line(screen, (255, 0, 255), (0, y), (SCREEN_WIDTH, y), 1)
+            #     #         else:  # vertical roads
+            #     #             x = START_X[direction][i]
+            #     #             pygame.draw.line(screen, (255, 0, 255), (x, 0), (x, SCREEN_HEIGHT), 1)
+
+            #     # --- Turning pivot points (yellow) ---
+            #     for d, pos in MID.items():
+            #         pygame.draw.circle(screen, (255, 255, 0), (pos['x'], pos['y']), 8)
+
+
+            pygame.display.update()
+            # frame_data = pygame.surfarray.array3d(screen)
+                
+            # Update the placeholder with the new frame.
+            # frame_placeholder.image(frame_data, channels="RGB", use_column_width=True)
             
-        # for vehicle in list(simulation):
-        #     vehicle.render(screen)
-        #     vehicle.move()
-
-        pygame.display.update()
-        clock.tick(120)
-        
-        # Copy the screen for streaming (non-blocking)
-        frame_copy = screen.copy()
-        if FRAME_QUEUE.empty():
-            FRAME_QUEUE.put(frame_copy)
+            # Copy the screen for streaming (non-blocking)
+            if FRAME_QUEUE.empty():
+                    FRAME_QUEUE.put(pygame.surfarray.make_surface(pygame.surfarray.array3d(screen)))
+            clock.tick(120)
     
     
 if __name__ == "__main__":
