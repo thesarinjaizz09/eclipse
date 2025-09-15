@@ -15,6 +15,8 @@ import uuid
 
 # Global list to store all vehicles
 VEHICLE_LIST = []
+STOP_FLAG = False
+USER_OVERRIDE_DIR = None  
 
 FRAME_QUEUE = queue.Queue(maxsize=1)  # Only keep the latest frame
 DEBUG_MODE = False
@@ -26,7 +28,7 @@ pygame.init()
 # === Configuration ===
 # --------------------------
 # Default times (seconds)
-DEFAULT_GREEN = {0: 10, 1: 10, 2: 10, 3: 10}  # green durations for each signal index
+DEFAULT_GREEN = 30  # green durations for each signal index
 DEFAULT_RED = 60
 DEFAULT_YELLOW = 2
 
@@ -54,7 +56,7 @@ VEHICLE_COUNT_COORDS = [(480, 210), (880, 210), (880, 550), (480, 550)]
 # Stop-lines and default stops (where vehicles should stop when light is red)
 STOP_LINES = {'right': 508, 'down': 408, 'left': 776, 'up': 612}
 DEFAULT_STOP = {'right': 498, 'down': 398, 'left': 786, 'up': 622}
-stop_event = threading.Event()
+
 # Movement gaps
 STOPPING_GAP = 25    # px gap when stopped
 MOVING_GAP = 25      # px gap when moving
@@ -102,7 +104,7 @@ LANE_STATE = {
     "left": {"label": "West", "spawned": 0, "crossed": 0, "remaining": 0},
     "right": {"label": "East", "spawned": 0, "crossed": 0, "remaining": 0}
 }
-STOP_FLAG = False
+SUGGESTION = ""
 
 
 # Rotation used when a vehicle turns (degrees per frame)
@@ -669,81 +671,123 @@ def dynamic_signal_controller():
     """
     Dynamic signal control with simultaneous green logic.
     """
-    global current_green, current_yellow, last_green, SIGNAL_CONTROL_RUNNING, signals, simultaneous_green
+    global current_green, current_yellow, last_green, SIGNAL_CONTROL_RUNNING, signals, simultaneous_green, USER_OVERRIDE_DIR, SUGGESTION
+    
+    Map = {
+        'left': "East",
+        "right": 'West',
+        'up': 'South',
+        'down': 'North'
+    }
 
     SIGNAL_CONTROL_RUNNING = True
     while SIGNAL_CONTROL_RUNNING:
-        # 1️⃣ Pick next green direction
-        remaining_counts = {d: LANE_STATE[d]["remaining"] for d in LANE_STATE}
-        sorted_dirs = sorted(remaining_counts.items(), key=lambda x: x[1], reverse=True)
-        for dir_name, count in sorted_dirs:
-            if dir_name != last_green:
-                chosen_dir, chosen_count = dir_name, count
+            chosen_dir = None
+            
+            # remaining_counts = {d: LANE_STATE[d]["remaining"] for d in LANE_STATE}
+            # sorted_dirs = sorted(remaining_counts.items(), key=lambda x: x[1], reverse=True)
+
+            # for dir_name, count in sorted_dirs:
+            #     if dir_name != last_green:
+            #         suggested_dir, suggested_count = dir_name, count
+            #         break
+            # else:
+            #     suggested_dir, suggested_count = sorted_dirs[0]
+
+            # # duration suggestion
+            # green_duration = max(MIN_GREEN_DURATION, int(suggested_count * SECONDS_PER_VEHICLE))
+            # green_duration = min(green_duration, MAX_GREEN)
+
+            # # 💡 store suggestion for frontend
+            # SUGGESTION = f"Suggested: {Map[suggested_dir]} - ({suggested_count} vehicles) - ({green_duration} seconds)"
+
+            # 1️⃣ Wait for user input
+            while USER_OVERRIDE_DIR is None and SIGNAL_CONTROL_RUNNING:
+                time.sleep(0.2)  # idle until user gives a command
+
+            if not SIGNAL_CONTROL_RUNNING:
                 break
-        else:
-            chosen_dir, chosen_count = sorted_dirs[0]
 
-        green_duration = max(MIN_GREEN_DURATION, int(chosen_count * SECONDS_PER_VEHICLE))
-        green_duration = min(green_duration, MAX_GREEN)
+            # 2️⃣ Use user-selected direction
+            chosen_dir = USER_OVERRIDE_DIR
+            USER_OVERRIDE_DIR = None  # reset so it waits for next command
 
-        current_green = [k for k, v in DIRECTION_MAP.items() if v == chosen_dir][0]
-        last_green = chosen_dir
-        current_yellow = 0
+            green_duration = DEFAULT_GREEN
 
-        simultaneous_green = SIMULTANEOUS_MAP[current_green]
+            current_green = [k for k, v in DIRECTION_MAP.items() if v == chosen_dir][0]
+            last_green = chosen_dir
+            current_yellow = 0
 
-        # 2️⃣ Reset all signals first
-        for sig in signals:
-            sig.green = 0
-            sig.yellow = 0
-            sig.red = green_duration + DEFAULT_YELLOW
+            simultaneous_green = SIMULTANEOUS_MAP[current_green]
 
-        # 3️⃣ Set active + simultaneous green
-        for idx in [current_green, simultaneous_green]:
-            signals[idx].green = green_duration
-            signals[idx].yellow = DEFAULT_YELLOW
-            signals[idx].red = sum(signals[j].green + signals[j].yellow for j in range(no_of_signals) if j not in [idx, current_green, simultaneous_green])
+            # 2️⃣ Reset all signals first
+            for sig in signals:
+                sig.green = 0
+                sig.yellow = 0
+                sig.red = green_duration + DEFAULT_YELLOW
 
-        # 4️⃣ Countdown
-        while signals[current_green].green > 0 or signals[current_green].yellow > 0:
-            if signals[current_green].green > 0:
-                active_dir = DIRECTION_MAP[current_green]
-                sim_dir = DIRECTION_MAP[simultaneous_green]
-                active_remaining = LANE_STATE[active_dir]["remaining"]
+            # 3️⃣ Set active + simultaneous green
+            for idx in [current_green, simultaneous_green]:
+                signals[idx].green = green_duration
+                signals[idx].yellow = DEFAULT_YELLOW
+                signals[idx].red = sum(signals[j].green + signals[j].yellow for j in range(no_of_signals) if j not in [idx, current_green, simultaneous_green])
 
-                if active_remaining == 0:
-                    # ⏱ End green early → switch to yellow immediately
-                    print(f"⚡ Early cutoff: {active_dir} cleared, switching to yellow.")
-                    signals[current_green].green = 0
-                    signals[simultaneous_green].green = 0
-                    signals[current_green].yellow = DEFAULT_YELLOW
-                    signals[simultaneous_green].yellow = DEFAULT_YELLOW
+            # 4️⃣ Countdown
+            while signals[current_green].green > 0 or signals[current_green].yellow > 0:
+                if signals[current_green].green > 0:
+                        signals[current_green].green -= 1
+                        signals[simultaneous_green].green -= 1
+                        current_yellow = 0
+                elif signals[current_green].yellow > 0:
+                    signals[current_green].yellow -= 1
+                    signals[simultaneous_green].yellow -= 1
                     current_yellow = 1
                     for lane in range(0, 3):
                         for vehicle in vehicles[DIRECTION_MAP[current_green]][lane]:
                             vehicle.stop = DEFAULT_STOP[DIRECTION_MAP[current_green]]
                         for vehicle in vehicles[DIRECTION_MAP[simultaneous_green]][lane]:
                             vehicle.stop = DEFAULT_STOP[DIRECTION_MAP[simultaneous_green]]
-                else:
-                    # continue green
-                    signals[current_green].green -= 1
-                    signals[simultaneous_green].green -= 1
-                    current_yellow = 0
-            elif signals[current_green].yellow > 0:
-                signals[current_green].yellow -= 1
-                signals[simultaneous_green].yellow -= 1
-                current_yellow = 1
-                for lane in range(0, 3):
-                    for vehicle in vehicles[DIRECTION_MAP[current_green]][lane]:
-                        vehicle.stop = DEFAULT_STOP[DIRECTION_MAP[current_green]]
-                    for vehicle in vehicles[DIRECTION_MAP[simultaneous_green]][lane]:
-                        vehicle.stop = DEFAULT_STOP[DIRECTION_MAP[simultaneous_green]]
 
-            # Update red timers for other signals
-            for i in range(no_of_signals):
-                if i not in [current_green, simultaneous_green]:
-                    signals[i].red = signals[current_green].green + signals[current_green].yellow
-            time.sleep(1)
+                # Update red timers for other signals
+                for i in range(no_of_signals):
+                    if i not in [current_green, simultaneous_green]:
+                        signals[i].red = signals[current_green].green + signals[current_green].yellow
+                time.sleep(1)
+
+def dynamic_suggestions_controller():
+    """
+    Dynamic signal control with simultaneous green logic.
+    """
+    global current_green, current_yellow, last_green, SIGNAL_CONTROL_RUNNING, signals, simultaneous_green, USER_OVERRIDE_DIR, SUGGESTION
+    
+    Map = {
+        'left': "East",
+        "right": 'West',
+        'up': 'South',
+        'down': 'North'
+    }
+
+    SIGNAL_CONTROL_RUNNING = True
+    while SIGNAL_CONTROL_RUNNING:
+            
+            remaining_counts = {d: LANE_STATE[d]["remaining"] for d in LANE_STATE}
+            sorted_dirs = sorted(remaining_counts.items(), key=lambda x: x[1], reverse=True)
+
+            for dir_name, count in sorted_dirs:
+                if dir_name != last_green:
+                    suggested_dir, suggested_count = dir_name, count
+                    break
+            else:
+                suggested_dir, suggested_count = sorted_dirs[0]
+
+            # duration suggestion
+            green_duration = max(MIN_GREEN_DURATION, int(suggested_count * SECONDS_PER_VEHICLE))
+            green_duration = min(green_duration, MAX_GREEN)
+
+            # 💡 store suggestion for frontend
+            SUGGESTION = f"Suggested: {Map[suggested_dir]} - ({suggested_count} vehicles) - ({green_duration} seconds)"
+
+            time.sleep(3)
 
 def draw_lane_state_table(screen, font, lane_state, x=850, y=100, row_height=30):
     """
@@ -867,7 +911,7 @@ def draw_summary_table(screen, font, lane_state, time_elapsed, x=850, y=300, row
 
 # ---------------- MAIN LOOP ---------------- #
 def main(start_pygame=True, stop_flag=lambda: False):
-    while not stop_event.is_set():
+    while not STOP_FLAG:
         if start_pygame:
             global allowed_vehicle_type_indices, startup_mode, SPAWN_COUNTS, LANE_STATE, time_elapsed, current_green, current_yellow, simultaneous_green, LATEST_FRAME
             global signals, no_of_signals, startup_time, SHARED_SCREEN, SIM_STARTED
@@ -908,6 +952,7 @@ def main(start_pygame=True, stop_flag=lambda: False):
                 if time.time() - startup_time >= STARTUP_DELAY and not hasattr(initialize_signals, "done"):
                     initialize_signals.done = True
                     threading.Thread(target=dynamic_signal_controller, daemon=True).start()
+                    threading.Thread(target=dynamic_suggestions_controller, daemon=True).start()
                     startup_mode = False
 
                 screen.blit(background, (0, 0))

@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import SimTables from "./tables";
 
 export default function Stream() {
+  const [simData, setSimData] = useState(null);
+
   useEffect(() => {
     const pc = new RTCPeerConnection();
 
     pc.ontrack = (event) => {
-      console.log("Received track", event.streams[0]);
       const video = document.getElementById("remoteVideo");
       if (video) {
         video.srcObject = event.streams[0];
@@ -14,8 +16,7 @@ export default function Stream() {
       }
     };
 
-    async function start() {
-      // No local tracks, only receive
+    async function startWebRTC() {
       const offer = await pc.createOffer({ offerToReceiveVideo: true, offerToReceiveAudio: false });
       await pc.setLocalDescription(offer);
 
@@ -24,8 +25,38 @@ export default function Stream() {
       await pc.setRemoteDescription(answer);
     }
 
-    start();
+    startWebRTC();
+
+    // Polling sim data every 200ms
+    // const interval = setInterval(async () => {
+    //   try {
+    //     const res = await axios.get("http://localhost:8080/meta.json");
+    //     setSimData(res.data);
+    //   } catch (err) {
+    //     console.warn("Error fetching sim data:", err);
+    //   }
+    // }, 200);
+
+    // return () => {
+    //   clearInterval(interval);
+    //   pc.close();
+    // };
   }, []);
 
-  return <video id="remoteVideo" autoPlay playsInline muted style={{ width: "50%" }}></video>;
+  return (
+    <div>
+      <video
+        id="remoteVideo"
+        autoPlay
+        playsInline
+        muted
+        style={{ width: "50%" }}
+      ></video>
+      <SimTables />
+
+      {/* <pre style={{ marginTop: "1rem", background: "#f5f5f5", padding: "10px", color: 'black' }}>
+        {simData ? JSON.stringify(simData, null, 2) : "Waiting for sim data..."}
+      </pre> */}
+    </div>
+  );
 }

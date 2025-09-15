@@ -1,0 +1,746 @@
+{
+  "timestamp": 1757914000.6252425,
+  "suggestion": "Suggested: West - (27 vehicles) - (13 seconds)",
+  "lane_state": {
+    "up": {
+      "label": "North",
+      "spawned": 23,
+      "crossed": 0,
+      "remaining": 23
+    },
+    "down": {
+      "label": "South",
+      "spawned": 19,
+      "crossed": 5,
+      "remaining": 14
+    },
+    "left": {
+      "label": "West",
+      "spawned": 12,
+      "crossed": 12,
+      "remaining": 0
+    },
+    "right": {
+      "label": "East",
+      "spawned": 28,
+      "crossed": 0,
+      "remaining": 28
+    }
+  },
+  "time_elapsed": 42,
+  "current_green": 2,
+  "current_yellow": 0,
+  "simultaneous_green": 1,
+  "spawn_counts": {
+    "up": {
+      "0": 7,
+      "1": 7,
+      "2": 9
+    },
+    "down": {
+      "0": 7,
+      "1": 7,
+      "2": 5
+    },
+    "left": {
+      "0": 4,
+      "1": 3,
+      "2": 5
+    },
+    "right": {
+      "0": 8,
+      "1": 8,
+      "2": 12
+    }
+  },
+  "signal_state": [
+    {
+      "red": 11,
+      "yellow": 0,
+      "green": 0,
+      "signal-text": "---"
+    },
+    {
+      "red": 0,
+      "yellow": 2,
+      "green": 9,
+      "signal-text": 9
+    },
+    {
+      "red": 0,
+      "yellow": 2,
+      "green": 9,
+      "signal-text": 9
+    },
+    {
+      "red": 11,
+      "yellow": 0,
+      "green": 0,
+      "signal-text": "---"
+    }
+  ],
+  "ingress": 1.56,
+  "velocity": 2.32,
+  "latency": 2.31,
+  "alerts": 1.78,
+  "offences": 2.76,
+  "vehicles": [
+    {
+      "id": "d34b6bae-ebd3-4a15-bf1d-7081b2ee72c5",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "e5396765-7cc7-4a60-8cfa-188eb8d3a92e",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "dc6b28aa-60be-4e9c-b708-3371f4ce0bc2",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "40f55191-1e79-4cc5-a165-401271b0fa2c",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "703c9e53-6e7d-4688-ab99-49c7c7e78e34",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "7a91125c-f577-4efb-8903-7e2be9710aeb",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "41beecf5-e5ea-4e99-8c4d-88c5d2b16261",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "f8bd544b-343a-4a21-8241-075323b0c17a",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "a47493cb-0ab8-47a5-a157-585a4248c709",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "49ad258c-9d4f-4d14-9482-cfa14c4f68e7",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "0f4f4998-c4c2-4f55-8f35-964567a3b2ca",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "66c93aed-a205-4695-8a79-d9d3bb06b42f",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "aff44692-cb37-4ecb-8918-4244694a13ad",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "cfa57b68-4631-4dcf-a2da-8ebf7c4fb245",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "d4fd286b-42d7-4849-a911-d90ac5e07366",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "c4457df3-337a-4919-9d4b-9d740ab60d91",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "01e9b671-6081-450f-9042-2c9c5787057c",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "757f169e-1fd6-4eed-b7cc-5202858e8515",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "197fec87-7adf-43e4-aab8-23437d0536ca",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "5ccb16cf-a52e-46a0-b117-1b98df19d986",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "01870438-b1aa-4a3b-bb62-0f1ff15b990d",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "2a713bd8-778b-453e-ba33-5c31bbc48441",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "c869b09b-b3d7-4de3-8034-659e991e8f8c",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "1031b6b2-545e-479e-9033-59da75ef33c2",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "a177dd5c-bc54-453b-afb5-412e370f715d",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "left",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "f70a3e2c-932c-4057-9f35-97d332842ffa",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "756a6929-7630-4072-8491-98f6cbe910cd",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "997292bb-4a92-4de2-bb2c-31b42264a9bc",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "5c653208-bf2a-46c0-ac00-8cd38089b0b9",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "52da0cc5-3614-4b71-aa7b-f405f4222f67",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "5a85af26-ae7e-4b00-9eba-047efa43a9e3",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "b519542e-0504-4e36-9e35-b07da42178b7",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "6e404f2d-d1c2-4026-bd48-1281be924289",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "left",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "64df952c-0a2d-4487-be99-35ad2f7ca414",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "5f57b38f-df9d-4620-9ce3-635da94ddfda",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "5fc5a1bb-41a6-42f2-88a9-874b6cf80e6c",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "49ea7484-45bf-4362-ae8b-17a98f6b81e0",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "8cb5f5f4-b614-413c-8fb3-4a50863184b6",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "f0956d89-d174-40a9-b53f-311c06541bdb",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "16b6a021-56fc-48a3-9d2f-ac523ec82102",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "7ce8bb91-1e66-41e8-ad1b-cb8faf4d752d",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "535755cd-5ded-4d4d-801b-96b5656f8a6a",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "left",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "6e18a682-56dd-4bde-a289-e1600ed3fce2",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "64c87a35-c202-4277-931a-e15640f76868",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "a5a2dc8b-1d7b-4dca-bc86-b09170b5fdb8",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "3661bf0d-7573-48e9-a108-86cca0d995cd",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "9142fa62-1438-43f2-bf63-bbe01a6e1d8f",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "7d494631-4ebf-44ba-95b7-94344d88a24c",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "7214553c-0ab0-4bdf-9459-ce71a2d6a6b1",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "08b9243f-c63f-4410-9f02-9cabbef98cf4",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "6ed0603d-f984-4860-b35f-78b7dd3ec7d8",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "ef96d54d-0252-48e6-9379-1e59f503aefa",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "ed6acf72-1643-4fa7-81c5-17546e74375b",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "83e82890-ab2d-4a54-9517-7c5ac345d527",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "b8db131e-9934-490b-bc33-bc5e3d8b8caa",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "f24a271c-a26f-4683-ac29-f762c9f1bbfc",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "a30c3030-5970-4a11-b581-3dd5a54599cc",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "7f3be750-bb86-45cb-88ca-4b934af98dd1",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "17fee69a-774b-4087-89c5-0a1ffe61be90",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "b2088d44-ad69-4f3d-b5ef-0ae63b770141",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "f5373b5f-8d85-461e-8012-b8a661ba347d",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "d8997eb7-f432-4611-803a-1370c5b3fd02",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "23456be5-aea1-4194-a152-dac7a1192fcf",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "e656afcd-0b8c-4cb0-bc2f-c71186bd9851",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "e8361ba9-ab30-4853-9819-3fd790799a13",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "24bf1d8e-6c29-42f3-80c8-97da7d9e9f21",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "3f82184f-4083-4b6f-aa3b-fab7e589b14e",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "10e0e40a-efa4-47f5-8cd6-36b7239007ea",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "truck",
+      "speed": 2
+    },
+    {
+      "id": "fe24c272-3c94-4a20-a82b-729a2dc9a5d1",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "976cdbcd-abbf-4749-8fdf-f05f52bca114",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "down",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "18749ebb-9a8f-4fd4-8dc2-eee9b467a905",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "015a5945-c4da-4829-b222-974cd5c82ce6",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "1c43b058-c0dc-4aea-aab5-e13783643cfa",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "bbfdb21c-bba6-4cd0-b789-33cbb31d544f",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "47cb7bfe-d57d-4c0e-8428-0c89938fa15b",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "down",
+      "vehicle_type": "bus",
+      "speed": 2
+    },
+    {
+      "id": "c87a6938-ad19-4383-9067-efa386d64184",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "6130dcbe-b123-4239-a698-9fbd7a6d0c5e",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "right",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "57c73d50-85c3-4786-af69-bd7e37d0e369",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "2b8b85d3-a535-4973-bf47-7f5df4387f6b",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    },
+    {
+      "id": "d3e54b53-9ab3-4d62-ab04-e86682963546",
+      "lane_number": 1,
+      "will_turn": 0,
+      "direction": "up",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "abc792dd-6624-4aca-a587-b136bf3192e7",
+      "lane_number": 2,
+      "will_turn": 1,
+      "direction": "up",
+      "vehicle_type": "car",
+      "speed": 2.5
+    },
+    {
+      "id": "893c480f-a915-4f85-8105-d94e43a1c252",
+      "lane_number": 0,
+      "will_turn": 1,
+      "direction": "right",
+      "vehicle_type": "bike",
+      "speed": 2.75
+    }
+  ],
+  "throughput": 20.73
+}
